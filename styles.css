@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:'Courier New', Courier, monospace;
+    font-family: 'georgia', 'time new roman';
 }
 body{
     background-color: aliceblue;
@@ -33,19 +33,39 @@ header{
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
 }
 .show-card{
     width: 250px;
     height: 350px;
-    background-color: rgba(246, 247, 247, 0.5);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
     border-radius: 10px;
-    border: 1px solid white;
-    padding: 1rem;
+    position: relative;
+    perspective: 1000px;
+}
+.card-front{
     background-size: cover;
     background-position: center;
+    position: absolute;
+    inset: 0;
+}
+.card-back{
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+    background-color: white;
+    gap: 1rem;
+}
+.card-back, .card-front{
+    backface-visibility: hidden;
+    border-radius: 10px;
+    border: 1px solid white;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow: scroll;
+    overflow-wrap: anywhere;
+    padding: 1rem;
+    width: 100%;
+    height: 100%;
 }
