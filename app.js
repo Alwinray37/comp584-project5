@@ -1,9 +1,17 @@
-import { animate, stagger, utils } from 'https://cdn.jsdelivr.net/npm/animejs@4.0.2/+esm';
+import { animate, createAnimatable, stagger, utils } from 'https://cdn.jsdelivr.net/npm/animejs@4.0.2/+esm';
 
 const baseUrl = "https://api.tvmaze.com";
 const searchInput = document.querySelector("#search-input");
 const searchBtn = document.querySelector("#search-btn");
 const resultsCont = document.querySelector(".results-container");
+// both pupil elements (a NodeList: [leftPupil, rightPupil])
+const pupils = document.querySelectorAll(".pupil");
+// createAnimatable makes one animatable per pupil, so this is an array in the same
+// order as pupils: pupilAnimatables[0] moves the left pupil, [1] the right pupil
+const pupilAnimatables = [...pupils].map((pupil) => createAnimatable(pupil, {
+    x: 300,   // per-property duration in ms
+    y: 300,
+}));
 
 searchBtn.onclick = () => {
     // debug log to see what value search input has when button is clicked
@@ -37,6 +45,28 @@ searchBtn.onclick = () => {
         .catch(err => console.log(err));
 
 }
+
+// animating eye balls using animatable
+document.addEventListener("mousemove", (event) => {
+    // runs once per pupil; index is 0 for the left pupil, 1 for the right
+    pupils.forEach((pupil, index) => {
+        const eye = pupil.parentElement;
+        const eyeBounds = eye.getBoundingClientRect();
+        const { width, height, left, top } = eyeBounds;
+        // how far the pupil can move before leaving the eye
+        const maxX = (width - pupil.offsetWidth) / 2;
+        const maxY = (height - pupil.offsetHeight) / 2;
+        // cursor offset from the eye's center, clamped so the pupil stays inside the eye
+        const x = utils.clamp(event.clientX - left - width / 2, -maxX, maxX);
+        const y = utils.clamp(event.clientY - top - height / 2, -maxY, maxY);
+
+        // pupilAnimatables[index] is the animatable for THIS pupil (same index as in
+        // pupils.forEach). In the docs there is only one square, so they call
+        // animatableSquare.x(x) directly. Here we pick our pupil's animatable first.
+        pupilAnimatables[index].x(x); // move this pupil to x over 500ms
+        pupilAnimatables[index].y(y); // move this pupil to y over 500ms
+    });
+});
 
 function displayShow(element){
     // article element to contain the shows
@@ -89,3 +119,5 @@ function displayShow(element){
 function clearResults(){
     resultsCont.textContent = ""
 }
+
+// animating eyes using animatable
